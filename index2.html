@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Position Size Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .calculator {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .calculator h2 {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .results {
+      margin-top: 1.5rem;
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>Position Size Calculator</h2>
+    <div class="form-group">
+      <label for="entry">Entry Price</label>
+      <input type="number" id="entry" step="0.01">
+    </div>
+    <div class="form-group">
+      <label for="stopLoss">Stop Loss Price</label>
+      <input type="number" id="stopLoss" step="0.01">
+    </div>
+    <div class="form-group">
+      <label for="takeProfit">Take Profit Price</label>
+      <input type="number" id="takeProfit" step="0.01">
+    </div>
+    <div class="form-group">
+      <label for="risk">Risk Amount (USDT)</label>
+      <input type="number" id="risk" step="0.01" value="25">
+    </div>
+    <div class="form-group">
+      <label for="leverage">Leverage (optional)</label>
+      <input type="number" id="leverage" step="0.1" placeholder="e.g. 5 for 5x">
+    </div>
+    <button class="button" onclick="calculatePositionSize()">Calculate</button>
+    <div class="results" id="results" style="display: none;">
+      <p><strong>Position Size:</strong> <span id="positionSize"></span> units</p>
+      <p><strong>Trade Value:</strong> <span id="tradeValue"></span> USDT</p>
+      <p><strong>RRR:</strong> <span id="rrr"></span></p>
+      <p><strong>Margin Required:</strong> <span id="margin"></span> USDT</p>
+    </div>
+  </div>
+
+  <script>
+    function calculatePositionSize() {
+      const entry = parseFloat(document.getElementById("entry").value);
+      const stopLoss = parseFloat(document.getElementById("stopLoss").value);
+      const takeProfit = parseFloat(document.getElementById("takeProfit").value);
+      const risk = parseFloat(document.getElementById("risk").value);
+      const leverage = parseFloat(document.getElementById("leverage").value);
+
+      const slDistance = Math.abs(entry - stopLoss);
+      const tpDistance = Math.abs(takeProfit - entry);
+
+      if (!entry || !stopLoss || !takeProfit || !risk || slDistance === 0) {
+        alert("Please enter valid numbers and ensure stop loss and take profit are different from entry.");
+        return;
+      }
+
+      const size = risk / slDistance;
+      const tradeValue = size * entry;
+      const rrr = tpDistance / slDistance;
+      const margin = leverage ? (tradeValue / leverage) : "N/A";
+
+      document.getElementById("positionSize").textContent = size.toFixed(2);
+      document.getElementById("tradeValue").textContent = tradeValue.toFixed(2);
+      document.getElementById("rrr").textContent = rrr.toFixed(2) + " : 1";
+      document.getElementById("margin").textContent = margin === "N/A" ? margin : margin.toFixed(2);
+      document.getElementById("results").style.display = "block";
+    }
+  </script>
+</body>
+</html>
